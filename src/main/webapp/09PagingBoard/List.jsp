@@ -17,7 +17,22 @@ if (searchWord != null){
 	param.put("searchWord", searchWord);
 }
 int totalCount = dao.selectCount(param);
-List<BoardDTO> boardLists = dao.selectList(param);
+
+int pageSize = Integer.parseInt(application.getInitParameter("POSTS_PER_PAGE"));
+int blockPage = Integer.parseInt(application.getInitParameter("PAGES_PER_BLOCK"));
+int totalPage = (int)Math.ceil((double)totalCount / pageSize);
+
+int pageNum = 1;
+String pageTemp = request.getParameter("pageNum");
+if (pageTemp != null && !pageTemp.equals(""))
+	pageNum = Integer.parseInt(pageTemp);
+
+int start = (pageNum - 1) * pageSize + 1;
+int end = pageNum * pageSize;
+param.put("start",start);
+param.put("end",end);
+
+List<BoardDTO> boardLists = dao.selectListPage(param);
 dao.close();
 %>
 <!DOCTYPE html>
